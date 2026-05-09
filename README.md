@@ -1,6 +1,5 @@
 # LEARNING PROGRAMS
 
-````md
 <p align="center">
   <img src="./assets/tree-art.png" alt="Tree Art" width="700" />
 </p>
@@ -32,110 +31,12 @@ This repository is designed for technical readers. If you are a developer explor
 My name is **Miguel Angel Jaramillo Muñoz**.
 
 I am a **Senior Full-Stack Engineer** focused on scalable systems, backend architecture, AI automation, and product engineering.
-
 My work is centered around building complete technical systems, not just isolated scripts or surface-level automations.
-
 I work mainly with **Go, Node.js, Next.js, TypeScript, LLMs, and cloud infrastructure**. I am especially interested in backend systems, AI agents, developer tooling, automation pipelines, high-performance APIs, and the architecture behind real software products.
 
 This repository reflects the way I study engineering: by building, breaking, debugging, documenting, and improving.
 
 Instead of only reading theory, I prefer to turn each concept into something executable.
-
----
-
-## Current learning areas
-
-The repository is organized around the technologies I am actively studying and practicing.
-
-### Bash
-
-This section contains shell scripts, terminal utilities, command-line experiments, automation flows, file system operations, pipes, input handling, validation, process control, and scripting fundamentals.
-
-```txt
-bash/
-```
-````
-
-### Go
-
-This section contains Go projects focused on backend foundations, CLI tools, APIs, concurrency, clean architecture, performance, and service design.
-
-```txt
-go/
-```
-
-### JavaScript
-
-This section contains JavaScript projects for core language practice, Node.js scripting, async programming, API consumption, automation, and browser-based experiments.
-
-```txt
-javascript/
-```
-
-### TypeScript
-
-This section contains TypeScript projects focused on type-safe application development, backend services, frontend patterns, architecture, and maintainable codebases.
-
-```txt
-typescript/
-```
-
----
-
-## Repository structure
-
-```txt
-learnlab/
-  assets/
-    terminal-art.txt
-    terminal-art.png
-
-  bash/
-    dollar-conversion-app/
-      dollar_conversion_app.sh
-      README.md
-
-  go/
-    project-name/
-      main.go
-      go.mod
-      README.md
-
-  javascript/
-    project-name/
-      package.json
-      index.js
-      README.md
-
-  typescript/
-    project-name/
-      package.json
-      tsconfig.json
-      src/
-        index.ts
-      README.md
-
-  README.md
-  .gitignore
-```
-
----
-
-## How each project is documented
-
-Each project should include its own `README.md`.
-
-The purpose of each project README is to explain:
-
-```txt
-What the project does
-Why the project exists
-What concept it practices
-How to run it
-What I learned while building it
-```
-
-A project should not only contain code. It should also contain reasoning.
 
 ---
 
@@ -196,13 +97,13 @@ Projects related to LLMs, AI agents, workflow automation, prompt systems, docume
 Clone the repository:
 
 ```bash
-git clone git@github.com:YOUR_USERNAME/learning-lab.git
+git clone git@github.com:YOUR_USERNAME/learnlab.git
 ```
 
 Enter the repository:
 
 ```bash
-cd learning-lab
+cd learnlab
 ```
 
 Explore a language folder:
@@ -235,7 +136,7 @@ Rendered in this README with:
 
 ```md
 <p align="center">
-  <img src="./assets/terminal-art.png" alt="Terminal Art" width="700" />
+  <img src="./assets/tree-art.png" alt="Terminal Art" width="700" />
 </p>
 ```
 
@@ -243,8 +144,6 @@ Rendered in this README with:
 
 ## Purpose
 
-This monorepo exists to document my growth as an engineer.
-
+This monorepo exists to document my growth as an engineer. 👷
 It is a place to practice fundamentals, explore new ideas, build useful tools, and create a visible record of technical learning.
-
 The long-term goal is to turn repeated practice into engineering depth.
