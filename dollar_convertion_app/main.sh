@@ -43,9 +43,9 @@ current_dollar_value="$(get_dollar_value)"
 
 main "$current_dollar_value" "$dollar_input_value"
 
-continue="y"
+should_continue="y"
 
-for [["$continue" == "y"]]; do
+while [["$should_continue" == "y"]]; do
   read -p "Do you want to convert another amount? (y/n) " answer
   case "$answer" in
   [Yy]*)
@@ -61,7 +61,7 @@ for [["$continue" == "y"]]; do
     fi
     ;;
   [Nn]*)
-    continue="n"
+    should_continue="n"
     echo "Goodbye!"
     exit 0
     ;;
