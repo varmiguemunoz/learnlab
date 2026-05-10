@@ -1,0 +1,5 @@
+database:
+  path: ./data/commandpm.db
+
+mcp:
+  port: 8081
