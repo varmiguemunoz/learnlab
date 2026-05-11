@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/joho/godotenv"
 	"github.com/varmiguemunoz/command_pm_app/internal/infrastructure/db"
 	"gorm.io/gorm"
 )

@@ -3,3 +3,6 @@ database:
 
 mcp:
   port: 8081
+
+auth:
+  callback_port: 8080
