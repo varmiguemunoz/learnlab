@@ -4,9 +4,31 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/.env}"
 
+env_trim() {
+  local value="$1"
+  value="${value#${value%%[![:space:]]*}}"
+  value="${value%${value##*[![:space:]]}}"
+  printf '%s' "$value"
+}
+
 if [[ -f "$ENV_FILE" ]]; then
-  # shellcheck disable=SC1090
-  source "$ENV_FILE"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="$(env_trim "$line")"
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    [[ "$line" == *=* ]] || continue
+
+    key="$(env_trim "${line%%=*}")"
+    value="$(env_trim "${line#*=}")"
+
+    [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+    if [[ "${value:0:1}" == '"' && "${value: -1}" == '"' ]]; then
+      value="${value:1:${#value}-2}"
+    elif [[ "${value:0:1}" == "'" && "${value: -1}" == "'" ]]; then
+      value="${value:1:${#value}-2}"
+    fi
+
+    export "$key=$value"
+  done < "$ENV_FILE"
 else
   printf 'ERROR: env file not found: %s\n' "$ENV_FILE" >&2
   exit 1
@@ -31,6 +53,7 @@ POLL_INTERVAL="${POLL_INTERVAL:-60}"
 STATE_FILE="${STATE_FILE:-$SCRIPT_DIR/state/processed_uids.txt}"
 LOG_FILE="${LOG_FILE:-$SCRIPT_DIR/logs/monitor.log}"
 LOCK_DIR="${LOCK_DIR:-$SCRIPT_DIR/state/.monitor.lock}"
+DESKTOP_NOTIFICATIONS="${DESKTOP_NOTIFICATIONS:-true}"
 
 mkdir -p "$(dirname "$STATE_FILE")" "$(dirname "$LOG_FILE")"
 touch "$STATE_FILE" "$LOG_FILE"
@@ -41,6 +64,21 @@ log() {
   local ts
   ts="$(date '+%Y-%m-%d %H:%M:%S')"
   printf '%s [%s] %s\n' "$ts" "$level" "$*" | tee -a "$LOG_FILE"
+}
+
+notify_desktop() {
+  local title="$1"
+  local message="$2"
+
+  [[ "$DESKTOP_NOTIFICATIONS" == "true" ]] || return 0
+
+  if command -v osascript >/dev/null 2>&1; then
+    osascript - "$message" "$title" >/dev/null 2>&1 <<'APPLESCRIPT' || true
+on run argv
+  display notification item 1 of argv with title item 2 of argv
+end run
+APPLESCRIPT
+  fi
 }
 
 trim() {
@@ -183,6 +221,9 @@ send_alert() {
     log INFO "alert sent for UID=$uid keyword=$keyword recipients=${#RECIPIENTS[@]}"
   else
     log ERROR "failed to send alert for UID=$uid"
+    notify_desktop \
+      "Error enviando alerta IMAP" \
+      "Falló el envío de alerta para UID=$uid keyword=$keyword. Revisá logs/monitor.log"
     rm -f "$tmp_msg"
     return 1
   fi

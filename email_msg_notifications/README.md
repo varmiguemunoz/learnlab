@@ -47,5 +47,6 @@ Monitorea una bandeja IMAP, detecta keywords y envía un resumen por SMTP a múl
 - `KEYWORDS`: lista separada por coma (ej: `DAVIVIENDA,TRANSFERENCIA`).
 - `ALERT_RECIPIENTS`: lista separada por coma.
 - `POLL_INTERVAL`: intervalo en segundos.
+- `DESKTOP_NOTIFICATIONS`: `true` para mostrar una notificación de escritorio en macOS cuando falle el envío SMTP.
 
 > No se hardcodean secretos: todo sale de `.env`.
