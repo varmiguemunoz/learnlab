@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_LABEL="com.email_msg_notifications.monitor"
 PLIST_PATH="$HOME/Library/LaunchAgents/${SERVICE_LABEL}.plist"
 ENV_PATH="$SCRIPT_DIR/.env"
-MAIN_SCRIPT="$SCRIPT_DIR/monitor_imap.sh"
+MAIN_SCRIPT="$SCRIPT_DIR/monitor_messages.sh"
 
 if [[ ! -f "$MAIN_SCRIPT" ]]; then
   printf 'ERROR: main script not found: %s\n' "$MAIN_SCRIPT" >&2

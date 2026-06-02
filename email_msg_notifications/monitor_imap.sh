@@ -172,32 +172,49 @@ match_keyword() {
   return 1
 }
 
+is_generated_alert() {
+  local file="$1"
+  local subject_h
+
+  if grep -Fiq 'X-Email-Keyword-Watcher: true' "$file"; then
+    return 0
+  fi
+
+  subject_h="$(extract_header "Subject" "$file")"
+  if [[ "$subject_h" == \[IMAP\ Alert\]* || "$subject_h" == \[Email\ Watcher\]* ]]; then
+    return 0
+  fi
+
+  return 1
+}
+
 send_alert() {
   local uid="$1"
   local keyword="$2"
   local mail_file="$3"
 
-  local from_h subject_h date_h body_preview tmp_msg
+  local from_h subject_h date_h tmp_msg
   from_h="$(extract_header "From" "$mail_file")"
   subject_h="$(extract_header "Subject" "$mail_file")"
   date_h="$(extract_header "Date" "$mail_file")"
-  body_preview="$(tr -d '\r' < "$mail_file" | awk 'BEGIN{blank=0} /^$/{blank=1;next} blank{print}' | sed '/^$/d' | head -n 12)"
 
   tmp_msg="$(mktemp)"
 
   {
     printf 'From: %s\n' "$SMTP_FROM"
     printf 'To: %s\n' "$(IFS=','; printf '%s' "${RECIPIENTS[*]}")"
-    printf 'Subject: [IMAP Alert] keyword detectada: %s (UID %s)\n' "$keyword" "$uid"
+    printf 'Subject: [Email Watcher] Mensaje detectado UID %s\n' "$uid"
+    printf 'X-Email-Keyword-Watcher: true\n'
     printf 'Content-Type: text/plain; charset=UTF-8\n'
     printf '\n'
-    printf 'Se detectó la keyword "%s" en un correo entrante.\n\n' "$keyword"
-    printf 'UID: %s\n' "$uid"
-    printf 'Date: %s\n' "${date_h:-N/A}"
-    printf 'From: %s\n' "${from_h:-N/A}"
-    printf 'Subject: %s\n\n' "${subject_h:-N/A}"
-    printf 'Vista previa (primeras líneas):\n'
-    printf '%s\n' "${body_preview:-<sin contenido legible>}"
+    printf 'Mensaje original completo detectado por el monitor.\n'
+    printf 'UID original: %s\n' "$uid"
+    printf 'Fecha original: %s\n' "${date_h:-N/A}"
+    printf 'Remitente original: %s\n' "${from_h:-N/A}"
+    printf 'Asunto original: %s\n' "${subject_h:-N/A}"
+    printf '\n----- INICIO MENSAJE ORIGINAL COMPLETO -----\n'
+    cat "$mail_file"
+    printf '\n----- FIN MENSAJE ORIGINAL COMPLETO -----\n'
   } > "$tmp_msg"
 
   local curl_args
@@ -267,6 +284,12 @@ process_once() {
     msg_file="$temp_dir/msg_${uid}.eml"
     if ! fetch_message_by_uid "$uid" "$msg_file"; then
       log ERROR "failed to fetch UID=$uid"
+      continue
+    fi
+
+    if is_generated_alert "$msg_file"; then
+      log INFO "skipping generated alert UID=$uid"
+      mark_uid_processed "$uid"
       continue
     fi
 
