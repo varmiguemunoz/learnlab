@@ -1,0 +1,5 @@
+build/
+blashphemous
+main
+*.o
+.DS_Store
