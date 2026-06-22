@@ -1,7 +1,7 @@
 #include "entities/player.h"
 
 void PlayerInit(Player *player) {
-    player->spriteSheet = LoadTexture("assets/sprites/penitent_one.png");
+    player->spriteSheet = LoadTexture("assets/sprites/penitent_one_stand.png");
 
     player->entity.position = (Vector2){ 100.0f, 100.0f };
     player->entity.velocity = (Vector2){ 0.0f, 0.0f };
