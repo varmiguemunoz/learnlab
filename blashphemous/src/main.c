@@ -1,21 +1,16 @@
-#include <stdio.h>
-#include <raylib.h>
+#include "core/game.h"
+#include "raylib.h"
 
-int main (void){
-  const int screenWidth = 800;
-  const int screenHeight = 450;
+int main(void) {
+    GameInit();
 
-  InitWindow(screenWidth, screenHeight, "Blashphemous");
-  SetTargetFPS(60);
+    while (!WindowShouldClose()) {
+        GameUpdate();
+        GameDraw();
+    }
 
-  while (!WindowShouldClose()){
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    DrawText("Hello, Blashphemous!", 190, 200, 20, LIGHTGRAY);
-    EndDrawing();
-  }
+    GameUnload();
 
-  CloseWindow();
-  return 0;
+    return 0;
 }
 
