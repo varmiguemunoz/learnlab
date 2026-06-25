@@ -14,8 +14,8 @@ typedef struct Player {
 } Player;
 
 void PlayerInit(Player *player);
-void PlayerUpdate(Player *player);
-void PlayerDraw(const Player *player);
+void PlayerUpdate(Player *player, Rectangle worldBounds);
+void PlayerDraw(const Player *player, Vector2 cameraOffset);
 void PlayerUnload(Player *player);
 
 #endif

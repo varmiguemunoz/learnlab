@@ -1,58 +1,72 @@
 #include "entities/enemy.h"
+#include "core/resources.h"
+#include "systems/physics.h"
+
+typedef enum EnemyAnimState {
+    ENEMY_ANIM_RUN
+} EnemyAnimState;
+
+static const AnimationClip enemyClips[] = {
+    [ENEMY_ANIM_RUN] = { .row = 0, .frameCount = 4, .frameDuration = 0.12f }
+};
 
 void EnemyInit(Enemy *enemy) {
-    enemy->spriteSheet = LoadTexture("assets/sprites/enemies/dagger/dagger-walk.png");
+    enemy->spriteSheet = ResourceGetTexture(RESOURCE_ENEMY_DAGGER);
 
     enemy->entity.position = (Vector2){ 400.0f, 100.0f };
     enemy->entity.velocity = (Vector2){ 0.0f, 0.0f };
-    enemy->entity.bounds = (Rectangle){ 400.0f, 100.0f, 32.0f, 32.0f };
+    enemy->entity.bounds = (Rectangle){ 400.0f, 100.0f, 43.0f, 74.0f };
     enemy->entity.isAlive = true;
+    enemy->entity.health = 50;
+    enemy->entity.maxHealth = 50;
 
     enemy->speed = 100.0f;
     enemy->facingLeft = false;
 
-    AnimationInit(&enemy->animation, 43, 74, 4, 0.12f);
+    AnimationInit(&enemy->animation, 43, 74);
+    AnimationSetClip(&enemy->animation, enemyClips[ENEMY_ANIM_RUN]);
 }
 
-void EnemyUpdate(Enemy *enemy) {
-    // Simple AI: Move left and right
-    if (enemy->facingLeft) {
-        enemy->entity.velocity.x = -enemy->speed;
-    } else {
-        enemy->entity.velocity.x = enemy->speed;
-    }
+void EnemyUpdate(Enemy *enemy, Rectangle worldBounds) {
+    enemy->entity.velocity.x = enemy->facingLeft ? -enemy->speed : enemy->speed;
+    enemy->entity.velocity.y = 0.0f;
 
-    enemy->entity.position.x += enemy->entity.velocity.x * GetFrameTime();
+    PhysicsIntegrate(&enemy->entity, GetFrameTime());
 
-    // Change direction when hitting screen edges
-    if (enemy->entity.position.x < 0.0f) {
-        enemy->entity.position.x = 0.0f;
+    if (enemy->entity.position.x < worldBounds.x) {
+        enemy->entity.position.x = worldBounds.x;
+        enemy->entity.bounds.x = enemy->entity.position.x;
         enemy->facingLeft = false;
     }
 
-    if (enemy->entity.position.x > (float)GetScreenWidth() - enemy->entity.bounds.width) {
-        enemy->entity.position.x = (float)GetScreenWidth() - enemy->entity.bounds.width;
+    if (enemy->entity.position.x > worldBounds.x + worldBounds.width - enemy->entity.bounds.width) {
+        enemy->entity.position.x = worldBounds.x + worldBounds.width - enemy->entity.bounds.width;
+        enemy->entity.bounds.x = enemy->entity.position.x;
         enemy->facingLeft = true;
     }
-
-    enemy->entity.bounds.x = enemy->entity.position.x;
-    enemy->entity.bounds.y = enemy->entity.position.y;
 
     AnimationUpdate(&enemy->animation);
 }
 
-void EnemyDraw(Enemy *enemy) {
-    Rectangle sourceRect = { enemy->animation.currentFrame * enemy->animation.frameWidth, 0, enemy->animation.frameWidth, enemy->animation.frameHeight };
-    Vector2 origin = { 0, 0 };
+void EnemyDraw(const Enemy *enemy, Vector2 cameraOffset) {
+    Rectangle sourceRect = AnimationGetFrameRect(&enemy->animation);
 
     if (enemy->facingLeft) {
-        DrawTexturePro(enemy->spriteSheet, sourceRect, enemy->entity.bounds, origin, 0.0f, WHITE);
-    } else {
-        DrawTexturePro(enemy->spriteSheet, sourceRect, enemy->entity.bounds, origin, 0.0f, WHITE);
+        sourceRect.width = -sourceRect.width;
     }
+
+    Rectangle destRect = {
+        enemy->entity.position.x - cameraOffset.x,
+        enemy->entity.position.y - cameraOffset.y,
+        (float)enemy->animation.frameWidth,
+        (float)enemy->animation.frameHeight
+    };
+
+    Vector2 origin = { 0.0f, 0.0f };
+
+    DrawTexturePro(enemy->spriteSheet, sourceRect, destRect, origin, 0.0f, WHITE);
 }
 
 void EnemyUnload(Enemy *enemy) {
-    UnloadTexture(enemy->spriteSheet);
+    (void)enemy;
 }
-

@@ -14,9 +14,9 @@ typedef struct Enemy {
 } Enemy;
 
 void EnemyInit(Enemy *enemy);
-void EnemyUpdate(Enemy *enemy);
-void EnemyDraw(const Enemy *enemy);
-void EnemyUnload(Enemy *enemy);  
+void EnemyUpdate(Enemy *enemy, Rectangle worldBounds);
+void EnemyDraw(const Enemy *enemy, Vector2 cameraOffset);
+void EnemyUnload(Enemy *enemy);
 
 #endif
 

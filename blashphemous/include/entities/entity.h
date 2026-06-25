@@ -8,6 +8,8 @@ typedef struct Entity {
     Vector2 velocity;
     Rectangle bounds;
     bool isAlive;
+    int health;
+    int maxHealth;
 } Entity;
 
 #endif
